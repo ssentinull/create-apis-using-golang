@@ -8,6 +8,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"github.com/ssentinull/create-apis-using-golang/config"
+	_bookHTTPHndlr "github.com/ssentinull/create-apis-using-golang/pkg/book/handler/http"
+	_bookRepo "github.com/ssentinull/create-apis-using-golang/pkg/book/repository/postgres"
+	_bookUcase "github.com/ssentinull/create-apis-using-golang/pkg/book/usecase"
 )
 
 // initialize logger configurations
@@ -38,9 +41,10 @@ func init() {
 
 func main() {
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+
+	bookRepo := _bookRepo.NewBookRepository()
+	bookUsecase := _bookUcase.NewBookUsecase(bookRepo)
+	_bookHTTPHndlr.NewBookHTTPHandler(e, bookUsecase)
 
 	s := &http.Server{
 		Addr:         ":" + config.ServerPort(),
