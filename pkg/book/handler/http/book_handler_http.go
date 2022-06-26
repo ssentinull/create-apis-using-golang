@@ -30,7 +30,7 @@ func (bh *BookHTTPHandler) CreateBook(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	book, err := bh.BookUsecase.CreateBook(c.Request().Context(), input)
+	book, err := bh.BookUsecase.Create(c.Request().Context(), input)
 	if err != nil {
 		logrus.Error(err)
 
@@ -41,7 +41,7 @@ func (bh *BookHTTPHandler) CreateBook(c echo.Context) error {
 }
 
 func (bh *BookHTTPHandler) FetchBooks(c echo.Context) error {
-	books, err := bh.BookUsecase.GetBooks(c.Request().Context())
+	books, err := bh.BookUsecase.FindAll(c.Request().Context())
 	if err != nil {
 		logrus.Error(err)
 
@@ -59,7 +59,7 @@ func (bh *BookHTTPHandler) FetchBookByID(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "url param is faulty")
 	}
 
-	book, err := bh.BookUsecase.GetBookByID(c.Request().Context(), ID)
+	book, err := bh.BookUsecase.FindByID(c.Request().Context(), ID)
 	if err != nil {
 		logrus.Error(err)
 

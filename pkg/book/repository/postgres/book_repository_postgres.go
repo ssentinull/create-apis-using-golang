@@ -13,12 +13,12 @@ func NewBookRepository() model.BookRepository {
 	return &bookRepo{}
 }
 
-func (br *bookRepo) CreateBook(ctx context.Context, book *model.Book) error {
+func (br *bookRepo) Create(ctx context.Context, book *model.Book) error {
 	return nil
 }
 
-func (br *bookRepo) ReadBookByID(ctx context.Context, ID int64) (model.Book, error) {
-	book := model.Book{
+func (br *bookRepo) FindByID(ctx context.Context, ID int64) (*model.Book, error) {
+	book := &model.Book{
 		ID:            ID,
 		Title:         "Harry Potter",
 		Author:        "J. K. Rowling",
@@ -30,8 +30,8 @@ func (br *bookRepo) ReadBookByID(ctx context.Context, ID int64) (model.Book, err
 	return book, nil
 }
 
-func (br *bookRepo) ReadBooks(ctx context.Context) ([]model.Book, error) {
-	books := []model.Book{
+func (br *bookRepo) FindAll(ctx context.Context) ([]*model.Book, error) {
+	books := []*model.Book{
 		{
 			ID:            1,
 			Title:         "Harry Potter",

@@ -38,13 +38,13 @@ func (i CreateBookInput) ToModel() *Book {
 }
 
 type BookUsecase interface {
-	CreateBook(context.Context, *CreateBookInput) (*Book, error)
-	GetBookByID(context.Context, int64) (Book, error)
-	GetBooks(context.Context) ([]Book, error)
+	Create(ctx context.Context, input *CreateBookInput) (book *Book, err error)
+	FindByID(ctx context.Context, ID int64) (book *Book, err error)
+	FindAll(ctx context.Context) (books []*Book, err error)
 }
 
 type BookRepository interface {
-	CreateBook(context.Context, *Book) error
-	ReadBookByID(context.Context, int64) (Book, error)
-	ReadBooks(context.Context) ([]Book, error)
+	Create(ctx context.Context, book *Book) (err error)
+	FindByID(ctx context.Context, ID int64) (book *Book, err error)
+	FindAll(ctx context.Context) (books []*Book, err error)
 }
