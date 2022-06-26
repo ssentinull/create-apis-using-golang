@@ -17,8 +17,27 @@ func NewBookHTTPHandler(e *echo.Echo, bu model.BookUsecase) {
 	handler := BookHTTPHandler{BookUsecase: bu}
 
 	g := e.Group("/v1")
+	g.POST("/books", handler.CreateBook)
 	g.GET("/books", handler.FetchBooks)
 	g.GET("/books/:ID", handler.FetchBookByID)
+}
+
+func (bh *BookHTTPHandler) CreateBook(c echo.Context) error {
+	input := new(model.CreateBookInput)
+	if err := c.Bind(input); err != nil {
+		logrus.Error(err)
+
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	book, err := bh.BookUsecase.CreateBook(c.Request().Context(), input)
+	if err != nil {
+		logrus.Error(err)
+
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusCreated, book)
 }
 
 func (bh *BookHTTPHandler) FetchBooks(c echo.Context) error {

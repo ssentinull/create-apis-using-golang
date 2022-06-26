@@ -16,6 +16,15 @@ func NewBookUsecase(br model.BookRepository) model.BookUsecase {
 	return &bookUsecase{bookRepo: br}
 }
 
+func (bu *bookUsecase) CreateBook(ctx context.Context, input *model.CreateBookInput) (*model.Book, error) {
+	book := input.ToModel()
+	if err := bu.bookRepo.CreateBook(ctx, book); err != nil {
+		return nil, err
+	}
+
+	return book, nil
+}
+
 func (bu *bookUsecase) GetBookByID(ctx context.Context, ID int64) (model.Book, error) {
 	book, err := bu.bookRepo.ReadBookByID(ctx, ID)
 	if err != nil {
