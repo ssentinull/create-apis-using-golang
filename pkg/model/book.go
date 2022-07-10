@@ -22,7 +22,6 @@ type CreateBookInput struct {
 	Description   string    `json:"description"`
 	PublishedDate string    `json:"published_date"`
 	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 func (i CreateBookInput) ToModel() *Book {
@@ -33,7 +32,6 @@ func (i CreateBookInput) ToModel() *Book {
 		Description:   i.Description,
 		PublishedDate: i.PublishedDate,
 		CreatedAt:     i.CreatedAt,
-		UpdatedAt:     i.UpdatedAt,
 	}
 }
 

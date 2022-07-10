@@ -26,14 +26,12 @@ func (bh *BookHTTPHandler) CreateBook(c echo.Context) error {
 	input := new(model.CreateBookInput)
 	if err := c.Bind(input); err != nil {
 		logrus.Error(err)
-
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	book, err := bh.BookUsecase.Create(c.Request().Context(), input)
 	if err != nil {
 		logrus.Error(err)
-
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
@@ -44,7 +42,6 @@ func (bh *BookHTTPHandler) FetchBooks(c echo.Context) error {
 	books, err := bh.BookUsecase.FindAll(c.Request().Context())
 	if err != nil {
 		logrus.Error(err)
-
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
@@ -55,14 +52,12 @@ func (bh *BookHTTPHandler) FetchBookByID(c echo.Context) error {
 	ID, err := strconv.ParseInt(c.Param("ID"), 10, 64)
 	if err != nil {
 		logrus.Error(err)
-
-		return c.JSON(http.StatusBadRequest, "url param is faulty")
+		return c.JSON(http.StatusBadRequest, "ID param is invalid")
 	}
 
 	book, err := bh.BookUsecase.FindByID(c.Request().Context(), ID)
 	if err != nil {
 		logrus.Error(err)
-
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 

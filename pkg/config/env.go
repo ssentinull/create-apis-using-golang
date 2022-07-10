@@ -12,13 +12,11 @@ func init() {
 	env := os.Getenv("ENV")
 	if env != "dev" && env != "" {
 		logrus.Warn("running using OS env variables")
-
 		return
 	}
 
 	if err := godotenv.Load(); err != nil {
 		logrus.Warn(".env file not found")
-
 		return
 	}
 

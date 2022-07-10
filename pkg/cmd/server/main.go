@@ -1,13 +1,13 @@
 package main
 
 import (
+	"github.com/ssentinull/create-apis-using-golang/pkg/config"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	"github.com/ssentinull/create-apis-using-golang/config"
 	_bookHTTPHndlr "github.com/ssentinull/create-apis-using-golang/pkg/book/handler/http"
 	_bookRepo "github.com/ssentinull/create-apis-using-golang/pkg/book/repository/postgres"
 	_bookUcase "github.com/ssentinull/create-apis-using-golang/pkg/book/usecase"

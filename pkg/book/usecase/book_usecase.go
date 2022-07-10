@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"encoding/json"
+	"github.com/ssentinull/create-apis-using-golang/pkg/utils"
 
 	"github.com/sirupsen/logrus"
 	"github.com/ssentinull/create-apis-using-golang/pkg/model"
@@ -19,6 +19,10 @@ func NewBookUsecase(br model.BookRepository) model.BookUsecase {
 func (bu *bookUsecase) Create(ctx context.Context, input *model.CreateBookInput) (*model.Book, error) {
 	book := input.ToModel()
 	if err := bu.bookRepo.Create(ctx, book); err != nil {
+		logrus.WithFields(logrus.Fields{
+			"ctx":   utils.Dump(ctx),
+			"input": utils.Dump(input),
+		}).Error(err)
 		return nil, err
 	}
 
@@ -28,16 +32,10 @@ func (bu *bookUsecase) Create(ctx context.Context, input *model.CreateBookInput)
 func (bu *bookUsecase) FindByID(ctx context.Context, ID int64) (*model.Book, error) {
 	book, err := bu.bookRepo.FindByID(ctx, ID)
 	if err != nil {
-		c, err := json.Marshal(ctx)
-		if err != nil {
-			logrus.Error(err)
-		}
-
 		logrus.WithFields(logrus.Fields{
-			"ctx": c,
+			"ctx": utils.Dump(ctx),
 			"ID":  ID,
 		}).Error(err)
-
 		return nil, err
 	}
 
@@ -47,13 +45,7 @@ func (bu *bookUsecase) FindByID(ctx context.Context, ID int64) (*model.Book, err
 func (bu *bookUsecase) FindAll(ctx context.Context) ([]*model.Book, error) {
 	books, err := bu.bookRepo.FindAll(ctx)
 	if err != nil {
-		c, err := json.Marshal(ctx)
-		if err != nil {
-			logrus.Error(err)
-		}
-
-		logrus.WithField("ctx", c).Error(err)
-
+		logrus.WithField("ctx", utils.Dump(ctx)).Error(err)
 		return nil, err
 	}
 
