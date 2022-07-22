@@ -36,6 +36,7 @@ func initLogger() {
 
 // run initLogger() before running main()
 func init() {
+	config.GetConf()
 	initLogger()
 }
 
