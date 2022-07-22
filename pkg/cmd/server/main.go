@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/ssentinull/create-apis-using-golang/pkg/config"
 	"net/http"
 	"os"
 	"time"
@@ -11,6 +10,7 @@ import (
 	_bookHTTPHndlr "github.com/ssentinull/create-apis-using-golang/pkg/book/handler/http"
 	_bookRepo "github.com/ssentinull/create-apis-using-golang/pkg/book/repository/postgres"
 	_bookUcase "github.com/ssentinull/create-apis-using-golang/pkg/book/usecase"
+	"github.com/ssentinull/create-apis-using-golang/pkg/config"
 )
 
 // initialize logger configurations

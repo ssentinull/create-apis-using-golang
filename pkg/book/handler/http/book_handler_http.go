@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"github.com/ssentinull/create-apis-using-golang/pkg/model"
+	"github.com/ssentinull/create-apis-using-golang/pkg/utils"
 )
 
 type BookHTTPHandler struct {
@@ -34,7 +35,7 @@ func (bh *BookHTTPHandler) CreateBook(c echo.Context) error {
 	book, err := bh.BookUsecase.Create(c.Request().Context(), input)
 	if err != nil {
 		logrus.Error(err)
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(utils.ParseHTTPErrorStatusCode(err), err.Error())
 	}
 
 	return c.JSON(http.StatusCreated, book)
@@ -50,7 +51,7 @@ func (bh *BookHTTPHandler) DeleteBookByID(c echo.Context) error {
 	err = bh.BookUsecase.DeleteByID(c.Request().Context(), ID)
 	if err != nil {
 		logrus.Error(err)
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(utils.ParseHTTPErrorStatusCode(err), err.Error())
 	}
 
 	return c.NoContent(http.StatusNoContent)
@@ -60,7 +61,7 @@ func (bh *BookHTTPHandler) FetchBooks(c echo.Context) error {
 	books, err := bh.BookUsecase.FindAll(c.Request().Context())
 	if err != nil {
 		logrus.Error(err)
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(utils.ParseHTTPErrorStatusCode(err), err.Error())
 	}
 
 	return c.JSON(http.StatusOK, books)
@@ -76,7 +77,7 @@ func (bh *BookHTTPHandler) FetchBookByID(c echo.Context) error {
 	book, err := bh.BookUsecase.FindByID(c.Request().Context(), ID)
 	if err != nil {
 		logrus.Error(err)
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(utils.ParseHTTPErrorStatusCode(err), err.Error())
 	}
 
 	return c.JSON(http.StatusOK, book)
@@ -92,7 +93,7 @@ func (bh *BookHTTPHandler) UpdateBook(c echo.Context) error {
 	book, err := bh.BookUsecase.Update(c.Request().Context(), input)
 	if err != nil {
 		logrus.Error(err)
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(utils.ParseHTTPErrorStatusCode(err), err.Error())
 	}
 
 	return c.JSON(http.StatusOK, book)
