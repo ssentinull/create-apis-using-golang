@@ -7,10 +7,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	_bookHTTPHndlr "github.com/ssentinull/create-apis-using-golang/pkg/book/handler/http"
-	_bookRepo "github.com/ssentinull/create-apis-using-golang/pkg/book/repository/postgres"
-	_bookUcase "github.com/ssentinull/create-apis-using-golang/pkg/book/usecase"
 	"github.com/ssentinull/create-apis-using-golang/pkg/config"
+	_bookHTTPHndlr "github.com/ssentinull/create-apis-using-golang/pkg/delivery"
+	_bookRepo "github.com/ssentinull/create-apis-using-golang/pkg/repository"
+	_bookUcase "github.com/ssentinull/create-apis-using-golang/pkg/usecase"
 )
 
 // initialize logger configurations
@@ -47,6 +47,8 @@ func main() {
 	bookUsecase := _bookUcase.NewBookUsecase(bookRepo)
 	_bookHTTPHndlr.NewBookHTTPHandler(e, bookUsecase)
 
+	logrus.Info("di sini!!!")
+	logrus.Info(config.ServerPort())
 	s := &http.Server{
 		Addr:         ":" + config.ServerPort(),
 		ReadTimeout:  2 * time.Minute,

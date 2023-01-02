@@ -2,10 +2,10 @@ package usecase
 
 import (
 	"context"
-	"github.com/ssentinull/create-apis-using-golang/pkg/utils"
 
 	"github.com/sirupsen/logrus"
 	"github.com/ssentinull/create-apis-using-golang/pkg/model"
+	"github.com/ssentinull/create-apis-using-golang/pkg/utils"
 )
 
 type bookUsecase struct {

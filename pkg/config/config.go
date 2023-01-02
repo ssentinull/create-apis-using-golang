@@ -1,9 +1,10 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"strings"
 )
 
 func GetConf() {
