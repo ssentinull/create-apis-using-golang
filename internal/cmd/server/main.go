@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"github.com/ssentinull/create-apis-using-golang/internal/config"
-	_bookHTTPHndlr "github.com/ssentinull/create-apis-using-golang/internal/delivery"
+	_bookHTTPHndlr "github.com/ssentinull/create-apis-using-golang/internal/delivery/http"
 	_bookRepo "github.com/ssentinull/create-apis-using-golang/internal/repository"
 	_bookUcase "github.com/ssentinull/create-apis-using-golang/internal/usecase"
 )
