@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/ssentinull/create-apis-using-golang/pkg/model"
+	"github.com/ssentinull/create-apis-using-golang/internal/model"
 )
 
 type bookRepo struct{}

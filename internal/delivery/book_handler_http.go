@@ -6,8 +6,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	"github.com/ssentinull/create-apis-using-golang/pkg/model"
-	"github.com/ssentinull/create-apis-using-golang/pkg/utils"
+	"github.com/ssentinull/create-apis-using-golang/internal/model"
+	"github.com/ssentinull/create-apis-using-golang/internal/utils"
 )
 
 type BookHTTPHandler struct {
