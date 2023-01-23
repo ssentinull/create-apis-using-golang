@@ -1,2 +1,14 @@
 env: "development"
 server_port: "8080"
+log_level: "development"
+postgres:
+  host: "localhost:5432"
+  database: "create_apis_using_golang"
+  username: "postgres"
+  password: "postgres"
+  sslmode: "disable"
+  max_idle_conns: 2
+  max_open_conns: 5
+  conn_max_lifetime: "1h"
+  ping_interval: "5000ms"
+  retry_attempts: 3
