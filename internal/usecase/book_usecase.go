@@ -16,12 +16,11 @@ func NewBookUsecase(br model.BookRepository) model.BookUsecase {
 	return &bookUsecase{bookRepo: br}
 }
 
-func (bu *bookUsecase) Create(ctx context.Context, input *model.CreateBookInput) (*model.Book, error) {
-	book := input.ToModel()
+func (bu *bookUsecase) Create(ctx context.Context, book *model.Book) (*model.Book, error) {
 	if err := bu.bookRepo.Create(ctx, book); err != nil {
 		logrus.WithFields(logrus.Fields{
-			"ctx":   utils.Dump(ctx),
-			"input": utils.Dump(input),
+			"ctx":  utils.Dump(ctx),
+			"book": utils.Dump(book),
 		}).Error(err)
 		return nil, err
 	}
@@ -64,12 +63,12 @@ func (bu *bookUsecase) FindAll(ctx context.Context) ([]*model.Book, error) {
 	return books, nil
 }
 
-func (bu *bookUsecase) Update(ctx context.Context, input *model.UpdateBookInput) (*model.Book, error) {
-	book, err := bu.bookRepo.Update(ctx, input.ToModel())
+func (bu *bookUsecase) Update(ctx context.Context, book *model.Book) (*model.Book, error) {
+	book, err := bu.bookRepo.Update(ctx, book)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"ctx":   utils.Dump(ctx),
-			"input": utils.Dump(input),
+			"ctx":  utils.Dump(ctx),
+			"book": utils.Dump(book),
 		}).Error(err)
 		return nil, err
 	}

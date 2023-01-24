@@ -32,7 +32,7 @@ func (bh *BookHTTPHandler) CreateBook(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	book, err := bh.BookUsecase.Create(c.Request().Context(), input)
+	book, err := bh.BookUsecase.Create(c.Request().Context(), input.ToModel())
 	if err != nil {
 		logrus.Error(err)
 		return c.JSON(utils.ParseHTTPErrorStatusCode(err), err.Error())
@@ -90,7 +90,7 @@ func (bh *BookHTTPHandler) UpdateBook(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	book, err := bh.BookUsecase.Update(c.Request().Context(), input)
+	book, err := bh.BookUsecase.Update(c.Request().Context(), input.ToModel())
 	if err != nil {
 		logrus.Error(err)
 		return c.JSON(utils.ParseHTTPErrorStatusCode(err), err.Error())

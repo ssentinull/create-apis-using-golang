@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"github.com/ssentinull/create-apis-using-golang/internal/config"
+	"github.com/ssentinull/create-apis-using-golang/internal/db"
 	_bookHTTPHndlr "github.com/ssentinull/create-apis-using-golang/internal/delivery/http"
 	_bookRepo "github.com/ssentinull/create-apis-using-golang/internal/repository"
 	_bookUcase "github.com/ssentinull/create-apis-using-golang/internal/usecase"
@@ -43,7 +44,8 @@ func init() {
 func main() {
 	e := echo.New()
 
-	bookRepo := _bookRepo.NewBookRepository()
+	db.InitializePostgresConn()
+	bookRepo := _bookRepo.NewBookRepository(db.PostgresDB)
 	bookUsecase := _bookUcase.NewBookUsecase(bookRepo)
 	_bookHTTPHndlr.NewBookHTTPHandler(e, bookUsecase)
 
