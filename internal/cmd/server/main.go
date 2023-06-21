@@ -10,7 +10,7 @@ import (
 	"github.com/ssentinull/create-apis-using-golang/internal/config"
 	"github.com/ssentinull/create-apis-using-golang/internal/db"
 	_bookHTTPHndlr "github.com/ssentinull/create-apis-using-golang/internal/delivery/http"
-	_bookRepo "github.com/ssentinull/create-apis-using-golang/internal/repository"
+	_repo "github.com/ssentinull/create-apis-using-golang/internal/repository"
 	_bookUcase "github.com/ssentinull/create-apis-using-golang/internal/usecase"
 )
 
@@ -45,7 +45,10 @@ func main() {
 	e := echo.New()
 
 	db.InitializePostgresConn()
-	bookRepo := _bookRepo.NewBookRepository(db.PostgresDB)
+	db.InitializeRedisConn()
+
+	cacheRepo := _repo.NewCacheRepository(db.RedisClient)
+	bookRepo := _repo.NewBookRepository(db.PostgresDB, cacheRepo)
 	bookUsecase := _bookUcase.NewBookUsecase(bookRepo)
 	_bookHTTPHndlr.NewBookHTTPHandler(e, bookUsecase)
 
