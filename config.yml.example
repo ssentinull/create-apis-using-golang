@@ -12,3 +12,7 @@ postgres:
   conn_max_lifetime: "1h"
   ping_interval: "5000ms"
   retry_attempts: 3
+redis:
+  host: "localhost:6379"
+  password: ""
+  db: 0

@@ -117,3 +117,18 @@ func PostgresRetryAttempts() int {
 
 	return DefaultPostgresRetryAttempts
 }
+
+// RedisHost :nodoc:
+func RedisHost() string {
+	return viper.GetString("redis.host")
+}
+
+// RedisPassword :nodoc:
+func RedisPassword() string {
+	return viper.GetString("redis.password")
+}
+
+// RedisDB :nodoc:
+func RedisDB() int {
+	return viper.GetInt("redis.db")
+}
