@@ -53,14 +53,25 @@ func (bu *bookUsecase) FindByID(ctx context.Context, ID int64) (*model.Book, err
 	return book, nil
 }
 
-func (bu *bookUsecase) FindAll(ctx context.Context) ([]*model.Book, error) {
-	books, err := bu.bookRepo.FindAll(ctx)
+func (bu *bookUsecase) FindAll(ctx context.Context, params model.GetBooksQueryParams) ([]*model.Book, int64, error) {
+	logger := logrus.WithFields(logrus.Fields{
+		"ctx":    utils.Dump(ctx),
+		"params": utils.Dump(params),
+	})
+
+	books, err := bu.bookRepo.FindAll(ctx, params)
 	if err != nil {
-		logrus.WithField("ctx", utils.Dump(ctx)).Error(err)
-		return nil, err
+		logger.Error(err)
+		return nil, int64(0), err
 	}
 
-	return books, nil
+	count, err := bu.bookRepo.CountAll(ctx)
+	if err != nil {
+		logger.Error(err)
+		return nil, int64(0), err
+	}
+
+	return books, count, nil
 }
 
 func (bu *bookUsecase) Update(ctx context.Context, book *model.Book) (*model.Book, error) {

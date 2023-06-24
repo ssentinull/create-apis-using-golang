@@ -56,11 +56,16 @@ func (i UpdateBookInput) ToModel() *Book {
 	}
 }
 
+type GetBooksQueryParams struct {
+	Page int64 `query:"page"`
+	Size int64 `query:"size"`
+}
+
 type BookUsecase interface {
 	Create(ctx context.Context, input *Book) (book *Book, err error)
 	DeleteByID(ctx context.Context, ID int64) (err error)
 	FindByID(ctx context.Context, ID int64) (book *Book, err error)
-	FindAll(ctx context.Context) (books []*Book, err error)
+	FindAll(ctx context.Context, query GetBooksQueryParams) (books []*Book, count int64, err error)
 	Update(ctx context.Context, input *Book) (book *Book, err error)
 }
 
@@ -68,6 +73,7 @@ type BookRepository interface {
 	Create(ctx context.Context, input *Book) (err error)
 	DeleteByID(ctx context.Context, ID int64) (err error)
 	FindByID(ctx context.Context, ID int64) (book *Book, err error)
-	FindAll(ctx context.Context) (books []*Book, err error)
+	FindAll(ctx context.Context, query GetBooksQueryParams) (books []*Book, err error)
+	CountAll(ctx context.Context) (count int64, err error)
 	Update(ctx context.Context, input *Book) (book *Book, err error)
 }

@@ -42,7 +42,12 @@ func (br *bookRepo) Create(ctx context.Context, book *model.Book) error {
 		return err
 	}
 
-	if err := br.cacheRepo.Delete(ctx, br.findAllCacheKey()); err != nil {
+	cacheKeys := []string{
+		br.cacheHash(),
+		br.countAllCacheKey(),
+	}
+
+	if err := br.cacheRepo.Delete(ctx, cacheKeys...); err != nil {
 		logger.Error(err)
 		return err
 	}
@@ -70,7 +75,7 @@ func (br *bookRepo) DeleteByID(ctx context.Context, ID int64) error {
 
 	cacheKeys := []string{
 		br.findByIDCacheKey(ID),
-		br.findAllCacheKey(),
+		br.cacheHash(),
 	}
 
 	if err := br.cacheRepo.Delete(ctx, cacheKeys...); err != nil {
@@ -123,10 +128,15 @@ func (br *bookRepo) FindByID(ctx context.Context, ID int64) (*model.Book, error)
 	return book, nil
 }
 
-func (br *bookRepo) FindAll(ctx context.Context) ([]*model.Book, error) {
-	logger := logrus.WithField("ctx", utils.Dump(ctx))
-	cacheKey := br.findAllCacheKey()
-	reply, err := br.cacheRepo.Get(ctx, cacheKey)
+func (br *bookRepo) FindAll(ctx context.Context, query model.GetBooksQueryParams) ([]*model.Book, error) {
+	logger := logrus.WithFields(logrus.Fields{
+		"ctx":   utils.Dump(ctx),
+		"query": utils.Dump(query),
+	})
+
+	cacheHash := br.cacheHash()
+	cacheKey := br.findAllByQueryParams(query)
+	reply, err := br.cacheRepo.HashGet(ctx, cacheHash, cacheKey)
 	if err != nil {
 		logger.Error(err)
 		return nil, err
@@ -142,9 +152,14 @@ func (br *bookRepo) FindAll(ctx context.Context) ([]*model.Book, error) {
 	}
 
 	books := []*model.Book{}
-	err = br.db.WithContext(ctx).Order("id DESC").Find(&books).Error
+	err = br.db.WithContext(ctx).
+		Order("id DESC").
+		Offset(int(model.Offset(query.Page, query.Size))).
+		Limit(int(query.Size)).
+		Find(&books).
+		Error
 	if err != nil {
-		logrus.WithField("ctx", utils.Dump(ctx)).Error(err)
+		logger.Error(err)
 		return nil, err
 	}
 
@@ -154,11 +169,53 @@ func (br *bookRepo) FindAll(ctx context.Context) ([]*model.Book, error) {
 		return books, nil
 	}
 
-	if err := br.cacheRepo.Set(ctx, cacheKey, string(bytes)); err != nil {
+	if err := br.cacheRepo.HashSet(ctx, cacheHash, cacheKey, string(bytes)); err != nil {
 		logger.Error(err)
 	}
 
 	return books, nil
+}
+
+func (br *bookRepo) CountAll(ctx context.Context) (int64, error) {
+	logger := logrus.WithField("ctx", utils.Dump(ctx))
+
+	cacheKey := br.countAllCacheKey()
+	reply, err := br.cacheRepo.Get(ctx, cacheKey)
+	if err != nil {
+		logger.Error(err)
+		return 0, err
+	}
+
+	if reply != "" {
+		count := int64(0)
+		if err := json.Unmarshal([]byte(reply), &count); err != nil {
+			logger.Error(err)
+			return 0, err
+		}
+		return count, nil
+	}
+
+	count := int64(0)
+	err = br.db.WithContext(ctx).
+		Model(model.Book{}).
+		Count(&count).
+		Error
+	if err != nil {
+		logrus.WithField("ctx", utils.Dump(ctx)).Error(err)
+		return int64(0), err
+	}
+
+	bytes, err := json.Marshal(count)
+	if err != nil {
+		logger.Error(err)
+		return 0, err
+	}
+
+	if err := br.cacheRepo.Set(ctx, cacheKey, string(bytes)); err != nil {
+		logger.Error(err)
+	}
+
+	return count, nil
 }
 
 func (br *bookRepo) Update(ctx context.Context, book *model.Book) (*model.Book, error) {
@@ -180,8 +237,9 @@ func (br *bookRepo) Update(ctx context.Context, book *model.Book) (*model.Book, 
 	}
 
 	cacheKeys := []string{
+		br.cacheHash(),
+		br.countAllCacheKey(),
 		br.findByIDCacheKey(book.ID),
-		br.findAllCacheKey(),
 	}
 
 	if err := br.cacheRepo.Delete(ctx, cacheKeys...); err != nil {
@@ -192,10 +250,18 @@ func (br *bookRepo) Update(ctx context.Context, book *model.Book) (*model.Book, 
 	return br.FindByID(ctx, book.ID)
 }
 
+func (br *bookRepo) cacheHash() string {
+	return "book"
+}
+
 func (br *bookRepo) findByIDCacheKey(ID int64) string {
 	return fmt.Sprintf("book:%d", ID)
 }
 
-func (br *bookRepo) findAllCacheKey() string {
-	return "book:all"
+func (br *bookRepo) findAllByQueryParams(query model.GetBooksQueryParams) string {
+	return fmt.Sprintf("book:page:%d:size:%d", query.Page, query.Size)
+}
+
+func (br *bookRepo) countAllCacheKey() string {
+	return "book:count"
 }

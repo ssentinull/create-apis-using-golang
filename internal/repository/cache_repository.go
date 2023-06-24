@@ -28,8 +28,17 @@ func (c *cacheRepo) Set(ctx context.Context, key, val string) error {
 }
 
 func (c *cacheRepo) Delete(ctx context.Context, keys ...string) error {
-	if err := c.redisClient.Del(ctx, keys...).Err(); err != nil {
-		return err
+	return c.redisClient.Del(ctx, keys...).Err()
+}
+
+func (c *cacheRepo) HashGet(ctx context.Context, hash, key string) (string, error) {
+	val, err := c.redisClient.HGet(ctx, hash, key).Result()
+	if err != nil && err != redis.Nil {
+		return "", err
 	}
-	return nil
+	return val, nil
+}
+
+func (c *cacheRepo) HashSet(ctx context.Context, hash, key, val string) error {
+	return c.redisClient.HSet(ctx, hash, key, val).Err()
 }

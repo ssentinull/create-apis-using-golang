@@ -58,13 +58,24 @@ func (bh *BookHTTPHandler) DeleteBookByID(c echo.Context) error {
 }
 
 func (bh *BookHTTPHandler) FetchBooks(c echo.Context) error {
-	books, err := bh.BookUsecase.FindAll(c.Request().Context())
+	queryParams := new(model.GetBooksQueryParams)
+	if err := c.Bind(queryParams); err != nil {
+		logrus.Error(err)
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	books, count, err := bh.BookUsecase.FindAll(c.Request().Context(), *queryParams)
 	if err != nil {
 		logrus.Error(err)
 		return c.JSON(utils.ParseHTTPErrorStatusCode(err), err.Error())
 	}
 
-	return c.JSON(http.StatusOK, books)
+	return c.JSON(http.StatusOK, model.NewPaginationResponse(
+		books,
+		queryParams.Page,
+		queryParams.Size,
+		count,
+	))
 }
 
 func (bh *BookHTTPHandler) FetchBookByID(c echo.Context) error {
