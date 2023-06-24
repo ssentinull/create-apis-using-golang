@@ -57,7 +57,7 @@ func main() {
 			ID:            utils.GenerateID(),
 			Title:         gofakeit.BookTitle(),
 			Author:        gofakeit.BookAuthor(),
-			Description:   gofakeit.Paragraph(1, 4, 30, "."),
+			Description:   gofakeit.Paragraph(1, 3, 10, "."),
 			PublishedDate: gofakeit.Date().Format("2006-01-02"),
 		}
 
