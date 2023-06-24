@@ -27,5 +27,6 @@ This is a demo service used as an example for the "Create APIs using Golang" art
 - [ ] Unit Testing.
 - [ ] Dockerize service.
 - [ ] Deploy to Cloud Platforms.
+- [ ] Elasticsearch.
 - [ ] GraphQL.
 - [ ] Microservices & gRPC.
