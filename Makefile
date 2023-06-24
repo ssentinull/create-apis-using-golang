@@ -9,3 +9,8 @@ migrate-up:
 # command to run migration down
 migrate-down:
 	go run internal/cmd/migration/main.go -direction=down -step=0
+
+# command to run db seeder based on number of $(seed)
+# eg: make seed-db seed=10
+seed-db:
+	go run internal/cmd/seeder/main.go -seed=$(seed)
