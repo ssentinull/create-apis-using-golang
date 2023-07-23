@@ -23,7 +23,7 @@ This is a demo service used as an example for the "Create APIs using Golang" art
 - [x] [Setup Workspace](https://ssentinull.github.io/blogs/create-api-using-golang-setup/).
 - [x] [Codebase Architecture](https://ssentinull.github.io/blogs/create-api-using-golang-architecture/).
 - [x] [Connecting to a Database](https://ssentinull.github.io/blogs/create-api-using-golang-database/).
-- [ ] Setup Cache.
+- [x] [Implement Cache](https://ssentinull.github.io/blogs/create-api-using-golang-cache/).
 - [ ] Unit Testing.
 - [ ] Dockerize service.
 - [ ] Deploy to Cloud Platforms.
