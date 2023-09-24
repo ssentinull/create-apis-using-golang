@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"regexp"
@@ -14,30 +13,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var book = model.Book{
-	ID:          int64(1),
-	Title:       "Harry Potter",
-	Author:      "J. K. Rowling",
-	Description: "A series about wizards",
-	CreatedAt:   time.Time{},
-	UpdatedAt:   time.Time{},
-}
-
 func TestBookRepository_Create(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	mockedDependency := newMockedDependency(ctrl)
+	mockedDependency := newMockedDependency(t)
+	defer mockedDependency.close()
 
+	ctx := mockedDependency.ctx
 	repo := bookRepo{
 		db:        mockedDependency.db,
 		cacheRepo: mockedDependency.cacheRepo,
 	}
 
-	ctx := context.Background()
-	query := `INSERT INTO "books" ("title","author","description","published_date","created_at","updated_at","deleted_at","id") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id"`
+	book := model.Book{
+		ID:          int64(1),
+		Title:       "Harry Potter",
+		Author:      "J. K. Rowling",
+		Description: "A series about wizards",
+		CreatedAt:   time.Time{},
+		UpdatedAt:   time.Time{},
+	}
+
 	cacheKeys := []string{
 		repo.cacheHash(),
 		repo.countAllCacheKey(),
 	}
+
+	query := `INSERT INTO "books" ("title","author","description","published_date","created_at","updated_at","deleted_at","id") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id"`
 
 	t.Run("success", func(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "author", "title", "description"}).
@@ -76,20 +76,30 @@ func TestBookRepository_Create(t *testing.T) {
 }
 
 func TestBookRepository_Delete(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	mockedDependency := newMockedDependency(ctrl)
+	mockedDependency := newMockedDependency(t)
+	defer mockedDependency.close()
 
+	ctx := mockedDependency.ctx
 	repo := bookRepo{
 		db:        mockedDependency.db,
 		cacheRepo: mockedDependency.cacheRepo,
 	}
 
-	ctx := context.Background()
-	query := `UPDATE "books" SET "deleted_at"=$1 WHERE "books"."id" = $2 AND "books"."deleted_at" IS NULL`
+	book := model.Book{
+		ID:          int64(1),
+		Title:       "Harry Potter",
+		Author:      "J. K. Rowling",
+		Description: "A series about wizards",
+		CreatedAt:   time.Time{},
+		UpdatedAt:   time.Time{},
+	}
+
 	cacheKeys := []string{
 		repo.findByIDCacheKey(book.ID),
 		repo.cacheHash(),
 	}
+
+	query := `UPDATE "books" SET "deleted_at"=$1 WHERE "books"."id" = $2 AND "books"."deleted_at" IS NULL`
 
 	t.Run("success", func(t *testing.T) {
 		mockedDependency.sql.ExpectBegin()
@@ -122,16 +132,26 @@ func TestBookRepository_Delete(t *testing.T) {
 }
 
 func TestBookRepository_FindByID(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	mockedDependency := newMockedDependency(ctrl)
+	mockedDependency := newMockedDependency(t)
+	defer mockedDependency.close()
 
+	ctx := mockedDependency.ctx
 	repo := bookRepo{
 		db:        mockedDependency.db,
 		cacheRepo: mockedDependency.cacheRepo,
 	}
 
-	ctx := context.Background()
+	book := model.Book{
+		ID:          int64(1),
+		Title:       "Harry Potter",
+		Author:      "J. K. Rowling",
+		Description: "A series about wizards",
+		CreatedAt:   time.Time{},
+		UpdatedAt:   time.Time{},
+	}
+
 	query := `SELECT * FROM "books" WHERE id = $1 AND "books"."deleted_at" IS NULL LIMIT 1`
+
 	cacheKey := repo.findByIDCacheKey(book.ID)
 	bytes, err := json.Marshal(book)
 	assert.NoError(t, err)
@@ -174,21 +194,31 @@ func TestBookRepository_FindByID(t *testing.T) {
 }
 
 func TestBookRepository_FindAll(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	mockedDependency := newMockedDependency(ctrl)
+	mockedDependency := newMockedDependency(t)
+	defer mockedDependency.close()
 
+	ctx := mockedDependency.ctx
 	repo := bookRepo{
 		db:        mockedDependency.db,
 		cacheRepo: mockedDependency.cacheRepo,
 	}
 
-	ctx := context.Background()
 	queryParams := model.GetBooksQueryParams{
 		Page: 1,
 		Size: 5,
 	}
 
+	book := model.Book{
+		ID:          int64(1),
+		Title:       "Harry Potter",
+		Author:      "J. K. Rowling",
+		Description: "A series about wizards",
+		CreatedAt:   time.Time{},
+		UpdatedAt:   time.Time{},
+	}
+
 	query := `SELECT * FROM "books" WHERE "books"."deleted_at" IS NULL ORDER BY id DESC LIMIT 5`
+
 	cacheHash := repo.cacheHash()
 	cacheKey := repo.findAllByQueryParams(queryParams)
 
@@ -234,16 +264,17 @@ func TestBookRepository_FindAll(t *testing.T) {
 }
 
 func TestBookRepository_CountAll(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	mockedDependency := newMockedDependency(ctrl)
+	mockedDependency := newMockedDependency(t)
+	defer mockedDependency.close()
 
+	ctx := mockedDependency.ctx
 	repo := bookRepo{
 		db:        mockedDependency.db,
 		cacheRepo: mockedDependency.cacheRepo,
 	}
 
-	ctx := context.Background()
 	query := `SELECT count(*) FROM "books" WHERE "books"."deleted_at" IS NULL`
+
 	cacheKey := repo.countAllCacheKey()
 	bytes, err := json.Marshal(1)
 	assert.NoError(t, err)
@@ -285,16 +316,26 @@ func TestBookRepository_CountAll(t *testing.T) {
 }
 
 func TestBookRepository_Update(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	mockedDependency := newMockedDependency(ctrl)
+	mockedDependency := newMockedDependency(t)
+	defer mockedDependency.close()
 
+	ctx := mockedDependency.ctx
 	repo := bookRepo{
 		db:        mockedDependency.db,
 		cacheRepo: mockedDependency.cacheRepo,
 	}
 
-	ctx := context.Background()
-	query := `UPDATE "books" SET "title"=$1,"author"=$2,"description"=$3,"created_at"=$4,"updated_at"=$5 WHERE "books"."deleted_at" IS NULL AND "id" = $6`
+	book := model.Book{
+		ID:          int64(1),
+		Title:       "Harry Potter",
+		Author:      "J. K. Rowling",
+		Description: "A series about wizards",
+		CreatedAt:   time.Time{},
+		UpdatedAt:   time.Time{},
+	}
+
+	query := `UPDATE "books" SET "title"=$1,"author"=$2,"description"=$3,"updated_at"=$4 WHERE "books"."deleted_at" IS NULL AND "id" = $5`
+
 	cacheKey := repo.findByIDCacheKey(book.ID)
 	cacheKeys := []string{
 		repo.cacheHash(),
