@@ -36,6 +36,11 @@ func TestBookUsecase_Create(t *testing.T) {
 	usecase := bookUsecase{bookRepo: mockedBookRepo}
 	ctx := context.Background()
 
+	defer func() {
+		ctrl.Finish()
+		ctx.Done()
+	}()
+
 	t.Run("success", func(t *testing.T) {
 		mockedBookRepo.EXPECT().Create(ctx, book).Times(1).Return(nil)
 		res, err := usecase.Create(ctx, book)
@@ -57,6 +62,11 @@ func TestBookUsecase_DeleteByID(t *testing.T) {
 	usecase := bookUsecase{bookRepo: mockedBookRepo}
 	ctx := context.Background()
 
+	defer func() {
+		ctrl.Finish()
+		ctx.Done()
+	}()
+
 	t.Run("success", func(t *testing.T) {
 		mockedBookRepo.EXPECT().DeleteByID(ctx, bookID).Times(1).Return(nil)
 		err := usecase.DeleteByID(ctx, bookID)
@@ -75,6 +85,11 @@ func TestBookUsecase_FindByID(t *testing.T) {
 	mockedBookRepo := mock.NewMockBookRepository(ctrl)
 	usecase := bookUsecase{bookRepo: mockedBookRepo}
 	ctx := context.Background()
+
+	defer func() {
+		ctrl.Finish()
+		ctx.Done()
+	}()
 
 	t.Run("success", func(t *testing.T) {
 		mockedBookRepo.EXPECT().FindByID(ctx, bookID).Times(1).Return(book, nil)
@@ -96,6 +111,11 @@ func TestBookUsecase_FindAll(t *testing.T) {
 	mockedBookRepo := mock.NewMockBookRepository(ctrl)
 	usecase := bookUsecase{bookRepo: mockedBookRepo}
 	ctx := context.Background()
+
+	defer func() {
+		ctrl.Finish()
+		ctx.Done()
+	}()
 
 	t.Run("success", func(t *testing.T) {
 		mockedBookRepo.EXPECT().FindAll(ctx, findAllParams).Times(1).Return(books, nil)
@@ -132,6 +152,11 @@ func TestBookUsecase_Update(t *testing.T) {
 	mockedBookRepo := mock.NewMockBookRepository(ctrl)
 	usecase := bookUsecase{bookRepo: mockedBookRepo}
 	ctx := context.Background()
+
+	defer func() {
+		ctrl.Finish()
+		ctx.Done()
+	}()
 
 	t.Run("success", func(t *testing.T) {
 		mockedBookRepo.EXPECT().Update(ctx, book).Times(1).Return(book, nil)
