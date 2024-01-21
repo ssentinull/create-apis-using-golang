@@ -10,11 +10,14 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/agiledragon/gomonkey/v2"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/ssentinull/create-apis-using-golang/internal/model"
 	"github.com/ssentinull/create-apis-using-golang/internal/model/mock"
+	"github.com/ssentinull/create-apis-using-golang/internal/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,6 +29,7 @@ func TestBookDeliveryHTTP_CreateBook(t *testing.T) {
 	httpHandler := BookHTTPHandler{BookUsecase: mockBookUsecase}
 	e := echo.New()
 
+	ID := int64(10)
 	title := "Harry Potter"
 	author := "J. K. Rowling"
 	description := "A book about wizards"
@@ -40,19 +44,33 @@ func TestBookDeliveryHTTP_CreateBook(t *testing.T) {
 	assert.NoError(t, err)
 
 	bookModel := model.Book{
+		ID:          ID,
 		Title:       title,
 		Author:      author,
 		Description: description,
 	}
 
 	t.Run("success", func(t *testing.T) {
+		idPatch := gomonkey.ApplyFunc(utils.GenerateID, func() int64 {
+			return ID
+		})
+
+		timePatch := gomonkey.ApplyFunc(time.Now, func() time.Time {
+			return time.Time{}
+		})
+
+		defer func() {
+			idPatch.Reset()
+			timePatch.Reset()
+		}()
+
 		req := httptest.NewRequest(http.MethodPost, "/v1/books", strings.NewReader(string(bookInputJSON)))
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
 
-		mockBookUsecase.EXPECT().Create(gomock.Any(), gomock.Any()).Times(1).Return(&bookModel, nil)
+		mockBookUsecase.EXPECT().Create(gomock.Any(), &bookModel).Times(1).Return(&bookModel, nil)
 
 		err := httpHandler.CreateBook(ctx)
 		assert.NoError(t, err)
